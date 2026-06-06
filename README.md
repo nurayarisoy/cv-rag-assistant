@@ -41,17 +41,27 @@ Alternatif olarak, `.env` dosyası oluşturup içine ekleyebilirsin (`.gitignore
 
 4. `cv.txt` dosyasına CV metnini koy.
 
+> Canlıya almak için `Procfile` eklendi; Render, Railway veya Heroku gibi servisler `web: python web.py` komutunu kullanarak çalıştırabilir.
+
 5. İndex oluştur (sadece bir kez):
 
 ```bash
 python index.py
 ```
 
-6. Sohbet uygulamasını çalıştır:
+6. CLI sohbet uygulamasını çalıştır:
 
 ```bash
 python app.py
 ```
+
+7. Web arayüzünü başlat:
+
+```bash
+python web.py
+```
+
+8. Tarayıcınızda `http://localhost:5000` adresini açın.
 
 Kullanım
 

@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CV RAG Arama Motoru</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #f2f2f2;
+        color: #202124;
+      }
+      .page {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+      .search-header {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .logo .dot {
+        width: 18px;
+        height: 18px;
+        background: #202124;
+        border-radius: 50%;
+      }
+      .header-text {
+        line-height: 1.2;
+      }
+      h1 {
+        margin: 0;
+        font-size: 2rem;
+      }
+      .search-box {
+        margin-top: 28px;
+      }
+      .search-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .search-input {
+        flex: 1 1 450px;
+        min-width: 180px;
+        border: 1px solid #dadce0;
+        border-radius: 24px;
+        padding: 14px 18px;
+        font-size: 1rem;
+        outline: none;
+      }
+      .search-button {
+        background: #1a73e8;
+        border: none;
+        color: white;
+        padding: 14px 22px;
+        border-radius: 24px;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+      .resume-card {
+        background: #fff;
+        border: 1px solid #d9d9d9;
+        border-radius: 18px;
+        box-shadow: 0 14px 28px rgba(0,0,0,0.06);
+        padding: 24px;
+        margin-top: 28px;
+        white-space: pre-wrap;
+        font-family: "Courier New", Courier, monospace;
+      }
+      .results {
+        margin-top: 28px;
+      }
+      .result-item {
+        background: #fff;
+        border-radius: 14px;
+        border: 1px solid #e8eaed;
+        padding: 20px;
+        margin-bottom: 18px;
+      }
+      .result-item h2 {
+        margin: 0 0 10px;
+        font-size: 1.1rem;
+      }
+      .result-item p {
+        margin: 0;
+        color: #4d5156;
+      }
+      .response-card {
+        margin-top: 28px;
+        background: #fff;
+        border-radius: 18px;
+        border: 1px solid #e8eaed;
+        padding: 22px;
+      }
+      .error {
+        margin-top: 18px;
+        padding: 14px 18px;
+        background: #fce8e6;
+        color: #7c1d15;
+        border: 1px solid #f2b8b5;
+        border-radius: 14px;
+      }
+      .sketch {
+        display: inline-block;
+        border: 1px dashed #666;
+        padding: 10px 14px;
+        border-radius: 16px;
+        font-size: 0.9rem;
+        color: #333;
+        background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(242,242,242,0.85));
+        transform: rotate(-0.2deg);
+        box-shadow: 2px 6px 18px rgba(0,0,0,0.06);
+        max-width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="search-header">
+        <div>
+          <div class="logo"><div class="dot"></div><strong>CV RAG Search</strong></div>
+          <p class="header-text">Kendi CV içeriğini arayabileceğin, sonuçları CV'ne göre filtreleyen canlı bir arayüz.</p>
+        </div>
+        <div class="sketch">Karakalem tasarım: CV verileri burada.</div>
+      </div>
+
+      <div class="search-box">
+        <form class="search-form" method="post">
+          <input class="search-input" name="query" placeholder="Bir soru ya da arama ifadesi gir..." value="{{ query|e }}" />
+          <button type="submit" class="search-button">Ara</button>
+        </form>
+      </div>
+
+      <div class="resume-card">
+        <strong>CV Özeti</strong>
+        <hr>
+        {{ resume_text|e }}
+      </div>
+
+      {% if error %}
+      <div class="error">{{ error }}</div>
+      {% endif %}
+
+      {% if answer %}
+      <div class="response-card">
+        <h2>Yanıt</h2>
+        <p>{{ answer }}</p>
+      </div>
+      {% endif %}
+
+      {% if documents %}
+      <div class="results">
+        <h2>Kaynak Dokümanlar</h2>
+        {% for doc in documents %}
+        <div class="result-item">
+          <p>{{ doc }}</p>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </body>
+</html>
