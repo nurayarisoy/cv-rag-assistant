@@ -1,22 +1,12 @@
-import os
-from pathlib import Path
-
-import openai
 import chromadb
 from chromadb.config import Settings
-from dotenv import load_dotenv
+from sentence_transformers import SentenceTransformer
 
-load_dotenv()
-
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-if not OPENAI_API_KEY:
-    raise RuntimeError(
-        "OPENAI_API_KEY bulunamadı. Lütfen .env dosyası veya ortam değişkeni olarak ayarlayın."
-    )
-openai.api_key = OPENAI_API_KEY
-
+EMBED_MODEL_NAME = "all-MiniLM-L6-v2"
 CHUNK_SIZE = 300
 CHUNK_OVERLAP = 50
+
+embedding_model = SentenceTransformer(EMBED_MODEL_NAME)
 
 
 def split_text(text: str, chunk_size: int, chunk_overlap: int) -> list[str]:
@@ -49,21 +39,17 @@ if not chunks:
 
 print(f"{len(chunks)} adet chunk oluşturuldu.")
 
-response = openai.Embedding.create(
-    model="text-embedding-3-small",
-    input=chunks,
-)
-embeddings = [item["embedding"] for item in response["data"]]
+embeddings = embedding_model.encode(chunks, convert_to_numpy=True).tolist()
 
 client = chromadb.Client(
     Settings(persist_directory="./db", is_persistent=True)
 )
 
 existing_collections = [c.name for c in client.list_collections()]
-if "cv" in existing_collections:
-    client.delete_collection("cv")
+if "cv_collection" in existing_collections:
+    client.delete_collection("cv_collection")
 
-collection = client.get_or_create_collection("cv")
+collection = client.get_or_create_collection("cv_collection")
 collection.add(
     ids=[f"chunk_{i}" for i in range(len(chunks))],
     documents=chunks,
@@ -71,4 +57,3 @@ collection.add(
 )
 
 print("Indexleme tamamlandı!")
-

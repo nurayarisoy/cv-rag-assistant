@@ -1,76 +1,53 @@
 # CV RAG Assistant
 
-Basit bir CV bazlı Retrieval-Augmented-Generation (RAG) örneği.
+Bu proje yerel model tabanlı bir CV arama ve cevaplama uygulamasıdır.
 
-**Dosyalar**
+## Dosyalar
 
-- `index.py` — `cv.txt` içeriğini parçalayıp OpenAI ile embedding oluşturur ve Chroma DB'ye yazar.
-- `app.py` — Chroma DB'den ilgili dokümanları çekip LLM ile soruları cevaplar.
-- `cv.txt` — İndexlenecek CV metni (kendi dosyanı ekle).
-- `requirements.txt` — Gerekli paketler.
-- `.env.example` — Ortam değişkeni format örneği.
+- `index.py` — `cv.txt` içeriğini parçalayıp yerel embedding modeliyle vektörler oluşturur ve Chroma DB'ye yazar.
+- `app.py` — Chroma DB'den ilgili dokümanları çekip yerel LLM ile sorulara cevap verir.
+- `web.py` — Flask tabanlı web arayüzü.
+- `cv.txt` — İndexlenecek CV metni.
+- `requirements.txt` — Gerekli Python paketleri.
 
-**Önkoşullar**
+## Gereksinimler
 
-- Python 3.10+ (veya proje ortamındaki sürüm)
-- Sanal ortam (tercihen `venv`)
-- OpenAI API anahtarı
+- Python 3.10+
+- `venv` veya benzeri sanal ortam
 
-Kurulum ve Çalıştırma
-
-1. Proje dizinine gir ve sanal ortamı aktif et:
+## Kurulum
 
 ```bash
 cd /Users/user/cv-rag-assistant
 source venv/bin/activate
-```
-
-2. Bağımlılıkları kur (gerekiyorsa):
-
-```bash
 pip install -r requirements.txt
 ```
 
-3. OpenAI API anahtarını ayarla (terminal oturumuna geçici olarak):
+## Kullanım
 
-```bash
-export OPENAI_API_KEY="sk-YENI_API_ANAHTARINIZ"
-```
-
-Alternatif olarak, `.env` dosyası oluşturup içine ekleyebilirsin (`.gitignore` zaten `.env`'i yoksayar). Örnek dosya için `.env.example` dosyasını kullanabilirsin.
-
-4. `cv.txt` dosyasına CV metnini koy.
-
-> Canlıya almak için `Procfile` eklendi; Render, Railway veya Heroku gibi servisler `web: python web.py` komutunu kullanarak çalıştırabilir.
-
-5. İndex oluştur (sadece bir kez):
+1. `cv.txt` dosyasına CV metnini ekleyin.
+2. `index.py` ile vektör veritabanını oluşturun:
 
 ```bash
 python index.py
 ```
 
-6. CLI sohbet uygulamasını çalıştır:
+3. CLI uygulamasını çalıştırın:
 
 ```bash
 python app.py
 ```
 
-7. Web arayüzünü başlat:
+4. Web arayüzünü başlatın:
 
 ```bash
 python web.py
 ```
 
-8. Tarayıcınızda `http://localhost:5000` adresini açın.
+5. Tarayıcıda `http://127.0.0.1:5000` adresine gidin.
 
-Kullanım
+## Notlar
 
-- `index.py` çalıştıktan sonra `./db` içinde `cv` koleksiyonu oluşturulur.
-- `app.py` çalıştığında `Ask:` istemi gelir; soru yaz ve Enter'a bas.
-
-Güvenlik Notları
-
-- OpenAI anahtarını git deposuna veya herkese açık yerlere koyma.
-- Eğer anahtar kazara paylaşıldıysa OpenAI hesabından derhal iptal (revoke) et ve yenisini oluştur.
-
-Sorun olursa bana söyle, test etmek veya hata ayıklamak için yardımcı olurum.
+- Bu sürüm OpenAI API gerektirmez.
+- Model dosyaları internetten indirilecektir.
+- Eğer `google/flan-t5-small` çok ağır gelirse, daha küçük bir `text2text-generation` modeline geçebilirsiniz.

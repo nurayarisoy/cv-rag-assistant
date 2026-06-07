@@ -1,45 +1,33 @@
-import os
-from pathlib import Path
-
-from dotenv import load_dotenv
 from flask import Flask, render_template, request
-import openai
 import chromadb
 from chromadb.config import Settings
-from langchain_openai import ChatOpenAI
+from sentence_transformers import SentenceTransformer
+from transformers import pipeline
 
-load_dotenv()
+EMBED_MODEL_NAME = "all-MiniLM-L6-v2"
+QA_MODEL_NAME = "google/flan-t5-small"
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-if not OPENAI_API_KEY:
-    raise RuntimeError(
-        "OPENAI_API_KEY bulunamadı. Lütfen .env dosyası veya ortam değişkeni olarak ayarlayın."
-    )
-openai.api_key = OPENAI_API_KEY
+embedding_model = SentenceTransformer(EMBED_MODEL_NAME)
+qa_model = pipeline(
+    "text2text-generation",
+    model=QA_MODEL_NAME,
+    device=-1,
+    max_length=256,
+    do_sample=False,
+)
 
 client = chromadb.Client(
     Settings(persist_directory="./db", is_persistent=True)
 )
 
 try:
-    collection = client.get_collection("cv")
+    collection = client.get_collection("cv_collection")
 except Exception:
     collection = None
 
-llm = ChatOpenAI(model="gpt-4o-mini")
-
 
 def embed_query(text: str) -> list[float]:
-    response = openai.Embedding.create(
-        model="text-embedding-3-small",
-        input=[text],
-    )
-    return response["data"][0]["embedding"]
-
-
-def load_resume_text() -> str:
-    path = Path("cv.txt")
-    return path.read_text(encoding="utf-8") if path.exists() else "CV dosyası bulunamadı."
+    return embedding_model.encode(text, convert_to_numpy=True).tolist()
 
 
 app = Flask(__name__)
@@ -51,7 +39,6 @@ def index():
     answer = None
     documents = []
     error = None
-    resume_text = load_resume_text()
 
     if request.method == "POST":
         query = request.form.get("query", "").strip()
@@ -71,18 +58,15 @@ def index():
                 if documents and documents[0]:
                     context = "\n".join(documents[0])
                     prompt = f"""
-You are a CV assistant.
-
-Context:
+Kontext:
 {context}
 
-Question:
+Frage:
 {query}
 
-Answer clearly and concisely.
+Antwort klar und kurz.
 """
-                    response = llm.invoke(prompt)
-                    answer = response.content
+                    answer = qa_model(prompt, truncation=True)[0]["generated_text"]
                 else:
                     error = "Sonuç bulunamadı."
             except Exception as exc:
@@ -93,10 +77,9 @@ Answer clearly and concisely.
         query=query,
         answer=answer,
         documents=documents[0] if documents else [],
-        resume_text=resume_text,
         error=error,
     )
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.getenv("PORT", "5000")), debug=True)
+    app.run(host="0.0.0.0", port=int(__import__('os').getenv("PORT", "5000")), debug=True)

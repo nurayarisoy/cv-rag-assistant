@@ -1,42 +1,34 @@
-
-import os
-from pathlib import Path
-
-import openai
 import chromadb
 from chromadb.config import Settings
-from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
+from sentence_transformers import SentenceTransformer
+from transformers import pipeline
 
-load_dotenv()
+EMBED_MODEL_NAME = "all-MiniLM-L6-v2"
+QA_MODEL_NAME = "google/flan-t5-small"
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-if not OPENAI_API_KEY:
-    raise RuntimeError(
-        "OPENAI_API_KEY bulunamadı. Lütfen .env dosyası veya ortam değişkeni olarak ayarlayın."
-    )
-openai.api_key = OPENAI_API_KEY
+embedding_model = SentenceTransformer(EMBED_MODEL_NAME)
+qa_model = pipeline(
+    "text2text-generation",
+    model=QA_MODEL_NAME,
+    device=-1,
+    max_length=256,
+    do_sample=False,
+)
 
 client = chromadb.Client(
     Settings(persist_directory="./db", is_persistent=True)
 )
 
 try:
-    collection = client.get_collection("cv")
+    collection = client.get_collection("cv_collection")
 except Exception as exc:
     raise RuntimeError(
         "cv koleksiyonu bulunamadı. Önce index.py'yi çalıştırarak veritabanını oluşturun."
     ) from exc
 
-llm = ChatOpenAI(model="gpt-4o-mini")
-
 
 def embed_query(text: str) -> list[float]:
-    response = openai.Embedding.create(
-        model="text-embedding-3-small",
-        input=[text],
-    )
-    return response["data"][0]["embedding"]
+    return embedding_model.encode(text, convert_to_numpy=True).tolist()
 
 
 while True:
@@ -60,16 +52,14 @@ while True:
     context = "\n".join(documents[0])
 
     prompt = f"""
-You are a CV assistant.
-
-Context:
+Kontext:
 {context}
 
-Question:
+Soru:
 {question}
 
-Answer clearly and concisely.
+Cevabı açık ve kısa ver.
 """
 
-    response = llm.invoke(prompt)
-    print("\nAnswer:", response.content)
+    response = qa_model(prompt, truncation=True)[0]["generated_text"]
+    print("\nAnswer:\n", response)
