@@ -1,30 +1,81 @@
-Deployment options
+# Deployment Guide
 
-1) Build & publish container (recommended)
+This project can run on Heroku, VPS providers, or any platform that supports Docker.
 
- - The repository already contains a `Dockerfile` and a GitHub Actions workflow that pushes to GitHub Container Registry (`ghcr.io`).
- - Push your code to `main` to trigger the workflow. The image will be published to `ghcr.io/<owner>/<repo>:latest`.
+## Heroku
 
-2) Run on a VPS (DigitalOcean, AWS EC2)
+The application is ready for Heroku-style runtime behavior:
 
- - Pull the image from GHCR and run it with:
+- `Procfile` starts the app with `gunicorn`
+- `web.py` reads the `PORT` environment variable
+- `GET /health` is available for smoke checks
 
- ```bash
- docker run -d -p 5001:5001 ghcr.io/<owner>/<repo>:latest
- ```
+### Deploy with Git
 
- - If you prefer to build on the server, clone the repo and run:
+```bash
+heroku create <your-app-name>
+git push heroku main
+```
 
- ```bash
- docker build -t cv-rag-assistant:latest .
- docker run -d -p 5001:5001 cv-rag-assistant:latest
- ```
+After deployment, open:
 
-3) Render / Railway
+```bash
+heroku open
+```
 
- - Use private Docker image from GHCR or connect repo and use the Dockerfile directly.
- - Note: heavy model downloads may exceed free plan limits.
+Your app URL will be:
 
-Notes:
-- Large model downloads and `torch` may make the image big; consider pre-baking models into the image or hosting the model separately (Hugging Face).
-- For automated deploy to a specific provider I will need access/credentials or you can run the above commands locally/remote.
+```text
+https://<your-app-name>.herokuapp.com
+```
+
+### Useful Heroku Commands
+
+```bash
+heroku logs --tail
+heroku ps
+heroku apps:info
+curl https://<your-app-name>.herokuapp.com/health
+```
+
+## Docker Image via GitHub Container Registry
+
+The repository already includes a GitHub Actions workflow that builds and pushes an image to `ghcr.io` on every push to `main`.
+
+Published image:
+
+```text
+ghcr.io/<owner>/<repo>:latest
+```
+
+## Run on a VPS
+
+Pull from GHCR:
+
+```bash
+docker run -d -p 7860:7860 ghcr.io/<owner>/<repo>:latest
+```
+
+Or build on the server:
+
+```bash
+docker build -t cv-rag-assistant:latest .
+docker run -d -p 7860:7860 cv-rag-assistant:latest
+```
+
+Health check:
+
+```bash
+curl http://localhost:7860/health
+```
+
+## Render or Railway
+
+- Connect the repository and deploy with the existing `Dockerfile`, or use the GHCR image directly.
+- Be aware that model downloads can make cold starts slow or exceed free-tier limits.
+
+## Notes
+
+- The app builds the Chroma index during image creation with `python index.py`.
+- `cv.txt` must be present in the deployed source/image.
+- Large model downloads and `torch` can make the image heavy; if needed, pre-bake model files or move model hosting elsewhere.

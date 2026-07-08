@@ -29,6 +29,13 @@
         gap: 22px;
         margin-bottom: 34px;
       }
+      .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
       .brand {
         display: inline-flex;
         align-items: center;
@@ -41,6 +48,26 @@
         height: 18px;
         background: #111827;
         border-radius: 50%;
+      }
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        border: 1px solid #dbeafe;
+        background: rgba(239, 246, 255, 0.92);
+        color: #1d4ed8;
+        font-size: 0.92rem;
+        font-weight: 600;
+      }
+      .status-pill::before {
+        content: "";
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #22c55e;
+        box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.12);
       }
       .hero {
         margin: 0;
@@ -97,6 +124,12 @@
         transform: translateY(-1px);
         box-shadow: 0 14px 30px rgba(37, 99, 235, 0.2);
       }
+      .search-button:disabled {
+        cursor: wait;
+        opacity: 0.8;
+        transform: none;
+        box-shadow: none;
+      }
       .hint {
         margin-top: 28px;
         color: #4b5563;
@@ -137,6 +170,31 @@
         outline: none;
         box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
         border-color: #2563eb;
+      }
+      .meta-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 22px;
+      }
+      .meta-card {
+        padding: 16px 18px;
+        border-radius: 22px;
+        border: 1px solid #e5e7eb;
+        background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(248,250,252,0.95));
+      }
+      .meta-label {
+        margin: 0 0 6px;
+        color: #6b7280;
+        font-size: 0.84rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .meta-value {
+        margin: 0;
+        color: #111827;
+        font-size: 1rem;
+        font-weight: 600;
       }
       .results {
         margin-top: 34px;
@@ -182,11 +240,17 @@
         border-radius: 16px;
       }
       @media (max-width: 720px) {
+        .header-top {
+          align-items: flex-start;
+        }
         .search-form {
           flex-direction: column;
         }
         .search-button {
           width: 100%;
+        }
+        .meta-grid {
+          grid-template-columns: 1fr;
         }
       }
     </style>
@@ -194,7 +258,10 @@
   <body>
     <div class="page">
       <header class="header">
-        <div class="brand"><span class="brand-dot"></span> Lebenslauf-Suchmaschine</div>
+        <div class="header-top">
+          <div class="brand"><span class="brand-dot"></span> Lebenslauf-Suchmaschine</div>
+          <div class="status-pill">Live resume search</div>
+        </div>
         <h1 class="hero">Stelle Fragen zu deinem Lebenslauf und erhalte präzise Antworten.</h1>
         <p class="subtext">Nutze die Suche wie eine moderne Suchmaschine: Frage nach Erfahrungen, Fähigkeiten, Ausbildung und Erfolgen.</p>
       </header>
@@ -225,6 +292,21 @@
             </li>
           </ul>
         </div>
+
+        <div class="meta-grid">
+          <div class="meta-card">
+            <p class="meta-label">Answer style</p>
+            <p class="meta-value">Short, grounded, resume-based</p>
+          </div>
+          <div class="meta-card">
+            <p class="meta-label">Source</p>
+            <p class="meta-value">Retrieved CV fragments from ChromaDB</p>
+          </div>
+          <div class="meta-card">
+            <p class="meta-label">Health check</p>
+            <p class="meta-value">Available at /health</p>
+          </div>
+        </div>
       </section>
 
       {% if error %}
@@ -254,16 +336,32 @@
       const queryInput = document.getElementById("query-input");
       const searchForm = document.getElementById("search-form");
       const sampleChips = document.querySelectorAll(".sample-chip");
+      const submitButton = searchForm?.querySelector(".search-button");
+
+      const submitQuery = (question) => {
+        if (!question || !queryInput || !searchForm || !submitButton) {
+          return;
+        }
+
+        queryInput.value = question;
+        submitButton.disabled = true;
+        submitButton.textContent = "Searching...";
+        searchForm.submit();
+      };
+
+      searchForm?.addEventListener("submit", () => {
+        if (!submitButton) {
+          return;
+        }
+
+        submitButton.disabled = true;
+        submitButton.textContent = "Searching...";
+      });
 
       sampleChips.forEach((chip) => {
         chip.addEventListener("click", () => {
           const question = chip.getAttribute("data-question") || "";
-          if (!question || !queryInput || !searchForm) {
-            return;
-          }
-
-          queryInput.value = question;
-          searchForm.submit();
+          submitQuery(question);
         });
       });
     </script>

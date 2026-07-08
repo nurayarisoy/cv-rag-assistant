@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, render_template, request
+from flask import Flask, jsonify, render_template, request
 import chromadb
 from chromadb.config import Settings
 from qa_service import generate_answer
@@ -34,6 +34,18 @@ def embed_query(text: str) -> list[float]:
 
 
 app = Flask(__name__)
+
+
+@app.get("/health")
+def health():
+    return jsonify(
+        {
+            "status": "ok",
+            "collection_loaded": collection is not None,
+            "embed_model": EMBED_MODEL_NAME,
+            "qa_model": QA_MODEL_NAME,
+        }
+    )
 
 
 @app.route("/", methods=["GET", "POST"])
