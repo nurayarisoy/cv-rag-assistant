@@ -1,6 +1,9 @@
+import os
+
 from flask import Flask, render_template, request
 import chromadb
 from chromadb.config import Settings
+from qa_service import generate_answer
 from sentence_transformers import SentenceTransformer
 from transformers import pipeline
 
@@ -51,22 +54,12 @@ def index():
                 query_embedding = embed_query(query)
                 result = collection.query(
                     query_embeddings=[query_embedding],
-                    n_results=3,
+                    n_results=5,
                     include=["documents"],
                 )
                 documents = result.get("documents", [])
                 if documents and documents[0]:
-                    context = "\n".join(documents[0])
-                    prompt = f"""
-Kontext:
-{context}
-
-Frage:
-{query}
-
-Antwort klar und kurz.
-"""
-                    answer = qa_model(prompt, truncation=True)[0]["generated_text"]
+                    answer = generate_answer(qa_model, query, documents[0])
                 else:
                     error = "Sonuç bulunamadı."
             except Exception as exc:
@@ -82,4 +75,5 @@ Antwort klar und kurz.
 
 
 if __name__ == "__main__":
- app.run(host="0.0.0.0", port=7860, debug=False)
+    port = int(os.getenv("PORT", "7860"))
+    app.run(host="0.0.0.0", port=port, debug=False)

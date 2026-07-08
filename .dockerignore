@@ -5,3 +5,6 @@ __pycache__
 .git
 .vscode
 tests
+db
+.github
+*.sqlite3

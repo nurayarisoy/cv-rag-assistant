@@ -1,5 +1,6 @@
 import chromadb
 from chromadb.config import Settings
+from qa_service import generate_answer
 from sentence_transformers import SentenceTransformer
 from transformers import pipeline
 
@@ -40,7 +41,7 @@ while True:
     query_embedding = embed_query(question)
     result = collection.query(
         query_embeddings=[query_embedding],
-        n_results=3,
+        n_results=5,
         include=["documents"],
     )
 
@@ -49,17 +50,5 @@ while True:
         print("Sonuç bulunamadı.")
         continue
 
-    context = "\n".join(documents[0])
-
-    prompt = f"""
-Kontext:
-{context}
-
-Soru:
-{question}
-
-Cevabı açık ve kısa ver.
-"""
-
-    response = qa_model(prompt, truncation=True)[0]["generated_text"]
+    response = generate_answer(qa_model, question, documents[0])
     print("\nAnswer:\n", response)
