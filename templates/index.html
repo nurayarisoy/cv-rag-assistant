@@ -113,11 +113,30 @@
         margin: 0;
         padding: 0;
       }
-      .sample-list li {
+      .sample-item {
+        margin: 0;
+      }
+      .sample-chip {
+        width: 100%;
+        text-align: left;
         padding: 14px 18px;
         border-radius: 20px;
         background: #f8fafc;
         border: 1px solid #e5e7eb;
+        color: #374151;
+        cursor: pointer;
+        font: inherit;
+        transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+      }
+      .sample-chip:hover {
+        background: #eef2ff;
+        border-color: #bfdbfe;
+        transform: translateY(-1px);
+      }
+      .sample-chip:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+        border-color: #2563eb;
       }
       .results {
         margin-top: 34px;
@@ -181,19 +200,29 @@
       </header>
 
       <section class="search-panel">
-        <form class="search-form" method="post">
-          <input class="search-input" name="query" placeholder="Stelle eine Frage zum Lebenslauf..." value="{{ query|e }}" />
+        <form class="search-form" method="post" id="search-form">
+          <input class="search-input" name="query" id="query-input" placeholder="Stelle eine Frage zum Lebenslauf..." value="{{ query|e }}" />
           <button type="submit" class="search-button">Suchen</button>
         </form>
 
         <div class="hint">
           <strong>Beispiel-Fragen:</strong>
           <ul class="sample-list">
-            <li>Welche beruflichen Erfahrungen hat die Person?</li>
-            <li>Welche Fähigkeiten sind am wichtigsten?</li>
-            <li>Welche Ausbildung hat sie?</li>
-            <li>Welche Sprachen spricht sie?</li>
-            <li>Welche Erfolge werden im Lebenslauf genannt?</li>
+            <li class="sample-item">
+              <button type="button" class="sample-chip" data-question="Welche beruflichen Erfahrungen hat die Person?">Welche beruflichen Erfahrungen hat die Person?</button>
+            </li>
+            <li class="sample-item">
+              <button type="button" class="sample-chip" data-question="Welche Fähigkeiten sind am wichtigsten?">Welche Fähigkeiten sind am wichtigsten?</button>
+            </li>
+            <li class="sample-item">
+              <button type="button" class="sample-chip" data-question="Welche Ausbildung hat sie?">Welche Ausbildung hat sie?</button>
+            </li>
+            <li class="sample-item">
+              <button type="button" class="sample-chip" data-question="Welche Sprachen spricht sie?">Welche Sprachen spricht sie?</button>
+            </li>
+            <li class="sample-item">
+              <button type="button" class="sample-chip" data-question="Welche Erfolge werden im Lebenslauf genannt?">Welche Erfolge werden im Lebenslauf genannt?</button>
+            </li>
           </ul>
         </div>
       </section>
@@ -220,5 +249,23 @@
       </div>
       {% endif %}
     </div>
+
+    <script>
+      const queryInput = document.getElementById("query-input");
+      const searchForm = document.getElementById("search-form");
+      const sampleChips = document.querySelectorAll(".sample-chip");
+
+      sampleChips.forEach((chip) => {
+        chip.addEventListener("click", () => {
+          const question = chip.getAttribute("data-question") || "";
+          if (!question || !queryInput || !searchForm) {
+            return;
+          }
+
+          queryInput.value = question;
+          searchForm.submit();
+        });
+      });
+    </script>
   </body>
 </html>
