@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-Intent = Literal["skills", "experience", "education", "languages", "general"]
+Intent = Literal["skills", "experience", "education", "languages", "tools", "general"]
 
 INTENT_KEYWORDS: dict[Intent, set[str]] = {
     "skills": {
@@ -10,8 +10,18 @@ INTENT_KEYWORDS: dict[Intent, set[str]] = {
         "skills",
         "technical",
         "technology",
+        "technologie",
+        "technologien",
         "tech",
         "stack",
+        "framework",
+        "frontend",
+        "backend",
+        "fahigkeit",
+        "fahigkeiten",
+        "fähigkeiten",
+        "kenntnis",
+        "kenntnisse",
         "beceri",
         "beceriler",
         "teknik",
@@ -24,6 +34,9 @@ INTENT_KEYWORDS: dict[Intent, set[str]] = {
         "job",
         "position",
         "worked",
+        "beruf",
+        "berufserfahrung",
+        "projekt",
         "deneyim",
         "tecrube",
         "arbeit",
@@ -35,6 +48,10 @@ INTENT_KEYWORDS: dict[Intent, set[str]] = {
         "university",
         "school",
         "graduation",
+        "ausbildung",
+        "hochschule",
+        "universität",
+        "universitaet",
         "egitim",
         "okul",
         "universite",
@@ -47,12 +64,57 @@ INTENT_KEYWORDS: dict[Intent, set[str]] = {
         "speak",
         "fluent",
         "linguistic",
+        "sprach",
+        "deutsch",
+        "englisch",
+        "telc",
         "dil",
         "diller",
         "sprache",
         "sprachen",
     },
+    "tools": {
+        "tool",
+        "tools",
+        "werkzeug",
+        "git",
+        "github",
+        "jira",
+        "trello",
+        "postman",
+    },
     "general": set(),
+}
+
+EXCLUDE_KEYWORDS_BY_INTENT: dict[Intent, set[str]] = {
+    "skills": {"sprachkurs", "deutschkurs", "zuwanderer", "telc", "esl", "englisch"},
+    "languages": set(),
+    "tools": {"sprachkurs", "deutschkurs", "zuwanderer", "telc"},
+    "experience": set(),
+    "education": set(),
+    "general": set(),
+}
+
+TECH_HINTS = {
+    "html",
+    "css",
+    "javascript",
+    "react",
+    "next.js",
+    "typescript",
+    "tailwind",
+    "bootstrap",
+    "material ui",
+    "ant design",
+    "node.js",
+    "python",
+    "firebase",
+    "rest api",
+    "mysql",
+    "postgresql",
+    "sqlite",
+    "llm",
+    "n8n",
 }
 
 
@@ -75,6 +137,9 @@ def normalize_facts(documents: list[str]) -> list[str]:
             line = raw_line.strip().strip("-*\u2022 ")
             if not line:
                 continue
+            # Skip section headings like "SKILLS" or "Frontend:"
+            if line.endswith(":") or line.upper() == line:
+                continue
             lowered = line.lower()
             if lowered in seen:
                 continue
@@ -96,8 +161,23 @@ def select_relevant_facts(question: str, documents: list[str], limit: int = 5) -
     keywords = INTENT_KEYWORDS[intent]
     matched = [fact for fact in facts if any(keyword in fact.lower() for keyword in keywords)]
 
+    exclude_keywords = EXCLUDE_KEYWORDS_BY_INTENT[intent]
+    if exclude_keywords:
+        matched = [
+            fact
+            for fact in matched
+            if not any(excluded in fact.lower() for excluded in exclude_keywords)
+        ]
+
     if matched:
         return intent, matched[:limit]
+
+    if intent == "skills":
+        tech_matched = [
+            fact for fact in facts if any(hint in fact.lower() for hint in TECH_HINTS)
+        ]
+        if tech_matched:
+            return intent, tech_matched[:limit]
 
     if intent == "education":
         return intent, []
@@ -133,6 +213,12 @@ Answer:
 
     if intent == "experience":
         return "; ".join(facts[:3])
+
+    if intent == "languages":
+        return "; ".join(facts[:4])
+
+    if intent == "tools":
+        return "; ".join(facts[:6])
 
     if len(response.split()) < 3:
         return "; ".join(facts[:3])

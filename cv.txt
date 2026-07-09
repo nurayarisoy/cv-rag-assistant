@@ -1,5 +1,51 @@
-Frontend Developer with 4 years experience
-React, Next.js, TypeScript
-AI Data Trainer experience
-n8n automation experience
-REST APIs and UI development
+SKILLS
+Frontend:
+- HTML5
+- CSS3
+- JavaScript (ES6+)
+- React
+- Next.js
+- TypeScript
+- Tailwind CSS
+- Bootstrap
+- Material UI
+- Ant Design
+
+Backend:
+- Node.js (basic)
+- Python (basic)
+- Firebase
+- REST APIs
+- MySQL
+- PostgreSQL
+- SQLite
+
+AI & AUTOMATION:
+- AI-assisted Development (LLM Workflows)
+- GitHub Copilot
+- Prompt Engineering (basic)
+- n8n Automation (workflow design)
+- API integrations
+
+TOOLS
+- Git
+- GitHub
+- Jira
+- Trello
+- Postman
+- Agile / Scrum / Kanban
+- WordPress
+
+WEITERBILDUNG / SPRACHKURSE
+- 15.09.2020 | TELC C1
+- Universität – Hochschule für Naturwissenschaften in Südwestfalen
+- 09.2020 – 04.2021 | C1 Sprachkurs – Prisma, Iserlohn
+- 10.2019 – 09.2020 | B2 Sprachkurs – Prisma, Iserlohn
+- 04.2019 – 10.2019 | B1 Sprachkurs – Prisma, Iserlohn
+- 09.2018 – 04.2019 | Deutschkurs für Zuwanderer
+
+KURSE / STUDIENINHALTE
+- ESL Fundamentals for Tech
+- CYDEOGmbH – Europaallee 33 – 67657 Kaiserslautern
+- 2024
+- Englisch als Zweitsprache für IT-Technologie
