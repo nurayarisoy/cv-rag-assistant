@@ -14,17 +14,28 @@ def split_text(text: str, chunk_size: int, chunk_overlap: int) -> list[str]:
         raise ValueError("chunk_size overlap'tan büyük olmalıdır")
 
     chunks = []
-    start = 0
-    text = text.strip()
+    current_lines = []
+    current_length = 0
 
-    while start < len(text):
-        end = min(len(text), start + chunk_size)
-        chunk = text[start:end].strip()
-        if chunk:
-            chunks.append(chunk)
-        if end == len(text):
-            break
-        start += chunk_size - chunk_overlap
+    for line in (line.strip() for line in text.splitlines()):
+        if not line:
+            continue
+
+        if current_lines and current_length + len(line) + 1 > chunk_size:
+            chunks.append("\n".join(current_lines))
+            overlap_line = current_lines[-1]
+            if len(overlap_line) <= chunk_overlap and len(overlap_line) + len(line) + 1 <= chunk_size:
+                current_lines = [overlap_line]
+                current_length = len(overlap_line)
+            else:
+                current_lines = []
+                current_length = 0
+
+        current_lines.append(line)
+        current_length += len(line) + (1 if len(current_lines) > 1 else 0)
+
+    if current_lines:
+        chunks.append("\n".join(current_lines))
 
     return chunks
 

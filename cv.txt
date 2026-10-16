@@ -1,51 +1,27 @@
-SKILLS
-Frontend:
-- HTML5
-- CSS3
-- JavaScript (ES6+)
-- React
-- Next.js
-- TypeScript
-- Tailwind CSS
-- Bootstrap
-- Material UI
-- Ant Design
+### SKILLS
 
-Backend:
-- Node.js (basic)
-- Python (basic)
-- Firebase
-- REST APIs
-- MySQL
-- PostgreSQL
-- SQLite
+**Frontend Development**
+- HTML5, CSS3, JavaScript (ES6+), TypeScript
+- React, Next.js, Redux
+- Tailwind CSS, Bootstrap, Material UI, Ant Design
 
-AI & AUTOMATION:
-- AI-assisted Development (LLM Workflows)
-- GitHub Copilot
-- Prompt Engineering (basic)
-- n8n Automation (workflow design)
-- API integrations
+**Backend & Datenbanken**
+- Python (Grundkenntnisse), Node.js (Grundkenntnisse)
+- Flask, REST APIs, Firebase
+- MySQL, PostgreSQL, SQLite
+- JSON, CSV
 
-TOOLS
-- Git
-- GitHub
-- Jira
-- Trello
-- Postman
-- Agile / Scrum / Kanban
-- WordPress
+**AI, RAG & Automatisierung**
+- Retrieval-Augmented Generation (RAG)
+- Embeddings mit sentence-transformers
+- Vektordatenbanken: ChromaDB
+- Semantische Suche und kontextbasierte Fragebeantwortung
+- Entwicklung eines CV-RAG-Chatbots mit Python und Flask
+- Prompt Engineering (Grundkenntnisse)
+- KI-gestützte Softwareentwicklung: GitHub Copilot, Claude Code, OpenAI Codex
+- API-Integrationen und n8n-Workflow-Automatisierung
 
-WEITERBILDUNG / SPRACHKURSE
-- 15.09.2020 | TELC C1
-- Universität – Hochschule für Naturwissenschaften in Südwestfalen
-- 09.2020 – 04.2021 | C1 Sprachkurs – Prisma, Iserlohn
-- 10.2019 – 09.2020 | B2 Sprachkurs – Prisma, Iserlohn
-- 04.2019 – 10.2019 | B1 Sprachkurs – Prisma, Iserlohn
-- 09.2018 – 04.2019 | Deutschkurs für Zuwanderer
-
-KURSE / STUDIENINHALTE
-- ESL Fundamentals for Tech
-- CYDEOGmbH – Europaallee 33 – 67657 Kaiserslautern
-- 2024
-- Englisch als Zweitsprache für IT-Technologie
+**Tools & Methoden**
+- Git, GitHub, Postman, Jira, Trello
+- Agile Methoden: Scrum, Kanban
+- Docker, Vercel, Hugging Face Spaces
